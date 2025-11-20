@@ -1,0 +1,22 @@
+.login-bg {
+  min-height: 100vh;
+  background-image: url('https://images.unsplash.com/photo-1516569422862-ffffffffffff?auto=format&fit=crop&w=1600&q=80');
+  background-size: cover;
+  background-position: center;
+  position: relative;
+}
+
+.overlay {
+  position: absolute;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.45);
+}
+
+.login-card {
+  backdrop-filter: blur(6px);
+  border-radius: 15px;
+}
+
+.bg-opacity {
+  background: rgba(255, 255, 255, 0.2) !important;
+}
