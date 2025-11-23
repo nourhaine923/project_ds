@@ -74,7 +74,7 @@ export default function LoginPage() {
                 <label className="form-check-label">Se souvenir de moi</label>
               </div>
 
-              <button type="submit" className="btn btn-warning w-100 fw-bold">
+              <button type="submit" className="btn btn-custom w-100 fw-bold">
                 Se connecter
               </button>
             </form>
