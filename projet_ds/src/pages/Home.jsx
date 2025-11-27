@@ -10,10 +10,10 @@ export default function Home() {
   ];
   
   const popularProducts = [
-    { id: 1, name: "Produit Premium", price: "29.99€", image: "https://via.placeholder.com/300x300/4ecdc4/ffffff?text=Produit+1" },
-    { id: 2, name: "Produit Élégant", price: "39.99€", image: "https://via.placeholder.com/300x300/ff6b9d/ffffff?text=Produit+2" },
-    { id: 3, name: "Produit Moderne", price: "49.99€", image: "https://via.placeholder.com/300x300/45b7d1/ffffff?text=Produit+3" },
-    { id: 4, name: "Produit Exclusif", price: "59.99€", image: "https://via.placeholder.com/300x300/f9ca24/ffffff?text=Produit+4" },
+    { id: 1, name: "Produit Premium", price: "29.99€", image: "https://images.unsplash.com/photo-1556228578-0d85b1a4d571?w=400&h=400&fit=crop" },
+    { id: 2, name: "Produit Élégant", price: "39.99€", image: "https://images.unsplash.com/photo-1441986300917-64674bd600d8?w=400&h=400&fit=crop" },
+    { id: 3, name: "Produit Moderne", price: "49.99€", image: "https://images.unsplash.com/photo-1505740420928-5e560c06d30e?w=400&h=400&fit=crop" },
+    { id: 4, name: "Produit Exclusif", price: "59.99€", image: "https://images.unsplash.com/photo-1586023492125-27b2c045efd7?w=400&h=400&fit=crop" },
   ];
 
   return (

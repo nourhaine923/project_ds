@@ -4,19 +4,29 @@ import "bootstrap/dist/css/bootstrap.min.css";
 export default function ProductDetails() {
   const { id } = useParams();
   
+  // Product images based on ID
+  const productImages = {
+    1: "https://images.unsplash.com/photo-1556228578-0d85b1a4d571?w=600&h=600&fit=crop",
+    2: "https://images.unsplash.com/photo-1441986300917-64674bd600d8?w=600&h=600&fit=crop",
+    3: "https://images.unsplash.com/photo-1505740420928-5e560c06d30e?w=600&h=600&fit=crop",
+    4: "https://images.unsplash.com/photo-1586023492125-27b2c045efd7?w=600&h=600&fit=crop",
+    5: "https://images.unsplash.com/photo-1522338242992-e1a54906a8da?w=600&h=600&fit=crop",
+    6: "https://images.unsplash.com/photo-1498049794561-7780e7231661?w=600&h=600&fit=crop",
+  };
+  
   const product = {
     id: parseInt(id),
     name: `Produit ${id}`,
     price: 49.99,
     description: "Description détaillée du produit. Ce produit est de haute qualité et offre une excellente valeur pour votre argent.",
-    image: "https://via.placeholder.com/500",
+    image: productImages[parseInt(id)] || "https://images.unsplash.com/photo-1505740420928-5e560c06d30e?w=600&h=600&fit=crop",
     category: "Tech",
   };
 
   const similarProducts = [
-    { id: 1, name: "Produit Similaire 1", price: "39.99€", image: "https://via.placeholder.com/200" },
-    { id: 2, name: "Produit Similaire 2", price: "59.99€", image: "https://via.placeholder.com/200" },
-    { id: 3, name: "Produit Similaire 3", price: "29.99€", image: "https://via.placeholder.com/200" },
+    { id: 1, name: "Produit Similaire 1", price: "39.99€", image: "https://images.unsplash.com/photo-1556228578-0d85b1a4d571?w=400&h=400&fit=crop" },
+    { id: 2, name: "Produit Similaire 2", price: "59.99€", image: "https://images.unsplash.com/photo-1441986300917-64674bd600d8?w=400&h=400&fit=crop" },
+    { id: 3, name: "Produit Similaire 3", price: "29.99€", image: "https://images.unsplash.com/photo-1505740420928-5e560c06d30e?w=400&h=400&fit=crop" },
   ];
 
   function handleAddToCart() {

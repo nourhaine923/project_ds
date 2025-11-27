@@ -4,9 +4,9 @@ import "bootstrap/dist/css/bootstrap.min.css";
 
 export default function AdminProductList() {
   const [products, setProducts] = useState([
-    { id: 1, name: "Produit 1", price: 29.99, image: "https://via.placeholder.com/100" },
-    { id: 2, name: "Produit 2", price: 39.99, image: "https://via.placeholder.com/100" },
-    { id: 3, name: "Produit 3", price: 49.99, image: "https://via.placeholder.com/100" },
+    { id: 1, name: "Produit 1", price: 29.99, image: "https://images.unsplash.com/photo-1556228578-0d85b1a4d571?w=200&h=200&fit=crop" },
+    { id: 2, name: "Produit 2", price: 39.99, image: "https://images.unsplash.com/photo-1441986300917-64674bd600d8?w=200&h=200&fit=crop" },
+    { id: 3, name: "Produit 3", price: 49.99, image: "https://images.unsplash.com/photo-1505740420928-5e560c06d30e?w=200&h=200&fit=crop" },
   ]);
 
   function handleDelete(id) {
