@@ -9,12 +9,12 @@ export default function Shop() {
 
   const categories = ["all", "Beauté", "Mode", "Tech", "Maison"];
   const products = [
-    { id: 1, name: "Produit 1", price: 29.99, category: "Beauté", image: "https://via.placeholder.com/200" },
-    { id: 2, name: "Produit 2", price: 39.99, category: "Mode", image: "https://via.placeholder.com/200" },
-    { id: 3, name: "Produit 3", price: 49.99, category: "Tech", image: "https://via.placeholder.com/200" },
-    { id: 4, name: "Produit 4", price: 59.99, category: "Maison", image: "https://via.placeholder.com/200" },
-    { id: 5, name: "Produit 5", price: 19.99, category: "Beauté", image: "https://via.placeholder.com/200" },
-    { id: 6, name: "Produit 6", price: 79.99, category: "Tech", image: "https://via.placeholder.com/200" },
+    { id: 1, name: "Produit 1", price: 29.99, category: "Beauté", image: "https://images.unsplash.com/photo-1556228578-0d85b1a4d571?w=400&h=400&fit=crop" },
+    { id: 2, name: "Produit 2", price: 39.99, category: "Mode", image: "https://images.unsplash.com/photo-1441986300917-64674bd600d8?w=400&h=400&fit=crop" },
+    { id: 3, name: "Produit 3", price: 49.99, category: "Tech", image: "https://images.unsplash.com/photo-1505740420928-5e560c06d30e?w=400&h=400&fit=crop" },
+    { id: 4, name: "Produit 4", price: 59.99, category: "Maison", image: "https://images.unsplash.com/photo-1586023492125-27b2c045efd7?w=400&h=400&fit=crop" },
+    { id: 5, name: "Produit 5", price: 19.99, category: "Beauté", image: "https://images.unsplash.com/photo-1522338242992-e1a54906a8da?w=400&h=400&fit=crop" },
+    { id: 6, name: "Produit 6", price: 79.99, category: "Tech", image: "https://images.unsplash.com/photo-1498049794561-7780e7231661?w=400&h=400&fit=crop" },
   ];
 
   const filteredProducts = products.filter((product) => {

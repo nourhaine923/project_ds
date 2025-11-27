@@ -4,8 +4,8 @@ import "bootstrap/dist/css/bootstrap.min.css";
 
 export default function Cart() {
   const [items, setItems] = useState([
-    { id: 1, name: "Produit 1", price: 29.99, quantity: 2, image: "https://via.placeholder.com/100" },
-    { id: 2, name: "Produit 2", price: 39.99, quantity: 1, image: "https://via.placeholder.com/100" },
+    { id: 1, name: "Produit 1", price: 29.99, quantity: 2, image: "https://images.unsplash.com/photo-1556228578-0d85b1a4d571?w=300&h=300&fit=crop" },
+    { id: 2, name: "Produit 2", price: 39.99, quantity: 1, image: "https://images.unsplash.com/photo-1441986300917-64674bd600d8?w=300&h=300&fit=crop" },
   ]);
 
   function updateQuantity(id, change) {
