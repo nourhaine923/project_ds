@@ -29,70 +29,94 @@ export default function Shop() {
   });
 
   return (
-    <div className="container mt-4">
-      <h1 className="mb-4">Boutique</h1>
-
-      {/* Barre de recherche */}
+    <div className="container my-5">
       <div className="row mb-4">
-        <div className="col-md-6">
-          <input
-            type="text"
-            className="form-control"
-            placeholder="Rechercher un produit..."
-            value={searchTerm}
-            onChange={(e) => setSearchTerm(e.target.value)}
-          />
+        <div className="col-12">
+          <h1 className="fw-bold mb-4">Boutique</h1>
         </div>
       </div>
 
-      {/* Filtres */}
-      <div className="row mb-4">
-        <div className="col-md-4">
-          <label className="form-label">Catégorie</label>
-          <select
-            className="form-select"
-            value={selectedCategory}
-            onChange={(e) => setSelectedCategory(e.target.value)}
-          >
-            {categories.map((cat) => (
-              <option key={cat} value={cat}>
-                {cat === "all" ? "Toutes" : cat}
-              </option>
-            ))}
-          </select>
-        </div>
-        <div className="col-md-4">
-          <label className="form-label">Prix</label>
-          <select
-            className="form-select"
-            value={priceRange}
-            onChange={(e) => setPriceRange(e.target.value)}
-          >
-            <option value="all">Tous les prix</option>
-            <option value="low">Moins de 30€</option>
-            <option value="medium">30€ - 50€</option>
-            <option value="high">Plus de 50€</option>
-          </select>
+      {/* Barre de recherche et filtres */}
+      <div className="card shadow-sm mb-4 border-0">
+        <div className="card-body">
+          <div className="row g-3">
+            <div className="col-md-6">
+              <label className="form-label fw-semibold">🔍 Rechercher</label>
+              <input
+                type="text"
+                className="form-control form-control-lg"
+                placeholder="Rechercher un produit..."
+                value={searchTerm}
+                onChange={(e) => setSearchTerm(e.target.value)}
+              />
+            </div>
+            <div className="col-md-3">
+              <label className="form-label fw-semibold">📂 Catégorie</label>
+              <select
+                className="form-select form-select-lg"
+                value={selectedCategory}
+                onChange={(e) => setSelectedCategory(e.target.value)}
+              >
+                {categories.map((cat) => (
+                  <option key={cat} value={cat}>
+                    {cat === "all" ? "Toutes" : cat}
+                  </option>
+                ))}
+              </select>
+            </div>
+            <div className="col-md-3">
+              <label className="form-label fw-semibold">💰 Prix</label>
+              <select
+                className="form-select form-select-lg"
+                value={priceRange}
+                onChange={(e) => setPriceRange(e.target.value)}
+              >
+                <option value="all">Tous les prix</option>
+                <option value="low">Moins de 30€</option>
+                <option value="medium">30€ - 50€</option>
+                <option value="high">Plus de 50€</option>
+              </select>
+            </div>
+          </div>
         </div>
       </div>
 
       {/* Liste des produits */}
-      <div className="row">
-        {filteredProducts.map((product) => (
-          <div key={product.id} className="col-md-3 mb-4">
-            <div className="card">
-              <img src={product.image} className="card-img-top" alt={product.name} />
-              <div className="card-body">
-                <h5 className="card-title">{product.name}</h5>
-                <p className="card-text">{product.price}€</p>
-                <Link to={`/produit/${product.id}`} className="btn btn-primary">
-                  Voir détails
-                </Link>
+      {filteredProducts.length === 0 ? (
+        <div className="text-center py-5">
+          <p className="text-muted fs-5">Aucun produit trouvé</p>
+        </div>
+      ) : (
+        <div className="row g-4">
+          {filteredProducts.map((product) => (
+            <div key={product.id} className="col-md-3 col-sm-6">
+              <div className="card product-card h-100 border-0 shadow-sm">
+                <div style={{ overflow: "hidden", height: "250px" }}>
+                  <img
+                    src={product.image}
+                    className="card-img-top w-100 h-100"
+                    alt={product.name}
+                    style={{ objectFit: "cover" }}
+                  />
+                </div>
+                <div className="card-body d-flex flex-column">
+                  <h5 className="card-title fw-bold">{product.name}</h5>
+                  <p className="text-muted small mb-2">{product.category}</p>
+                  <p className="card-text text-primary fw-bold fs-5 mb-3">
+                    {product.price}€
+                  </p>
+                  <Link
+                    to={`/produit/${product.id}`}
+                    className="btn btn-primary mt-auto"
+                  >
+                    Voir détails
+                  </Link>
+                </div>
               </div>
             </div>
-          </div>
-        ))}
-      </div>
+          ))}
+        </div>
+      )}
     </div>
   );
 }
