@@ -1,13 +1,14 @@
-import { useState } from "react";
+import React, { useState } from "react";
+import "bootstrap/dist/css/bootstrap.min.css";
+import "./LoginPage.css";
 
-export default function Login() {
+export default function LoginPage() {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [error, setError] = useState("");
 
   function handleLogin(e) {
     e.preventDefault();
-
     if (!email || !password) {
       setError("Veuillez remplir tous les champs.");
     } else {
@@ -17,52 +18,76 @@ export default function Login() {
   }
 
   return (
-    <div style={styles.container}>
-      <h2 style={styles.title}>Connexion</h2>
+    <div className="login-bg d-flex align-items-center justify-content-center">
+      <div className="overlay"></div>
 
-      {error && <p style={styles.error}>{error}</p>}
+      <div className="container position-relative text-white">
+        <div className="row d-flex justify-content-between align-items-center">
 
-      <form onSubmit={handleLogin} style={styles.form}>
-        <input
-          type="email"
-          placeholder="Email"
-          style={styles.input}
-          value={email}
-          onChange={(e) => setEmail(e.target.value)}
-        />
+          {/* LEFT SIDE */}
+          <div className="col-md-6 p-4">
+            <h1 className="display-4 fw-bold">Welcome</h1>
+            <p className="mt-3">
+              It is a long established fact that a reader will be distracted by
+              the readable content of a page when looking at its layout.
+            </p>
 
-        <input
-          type="password"
-          placeholder="Mot de passe"
-          style={styles.input}
-          value={password}
-          onChange={(e) => setPassword(e.target.value)}
-        />
+            <div className="d-flex gap-3 fs-3 mt-4">
+              <i className="fab fa-facebook"></i>
+              <i className="fab fa-twitter"></i>
+              <i className="fab fa-instagram"></i>
+              <i className="fab fa-youtube"></i>
+            </div>
+          </div>
 
-        <button style={styles.button}>Se connecter</button>
-      </form>
+          {/* RIGHT SIDE - FORM */}
+          <div className="col-md-5 p-4 bg-white bg-opacity rounded login-card">
+            <h2 className="fw-semibold mb-3 text-dark">Connexion</h2>
+
+            {error && <p className="text-danger">{error}</p>}
+
+            <form onSubmit={handleLogin}>
+              <div className="mb-3">
+                <label className="form-label">Email</label>
+                <input
+                  type="email"
+                  className="form-control"
+                  placeholder="Entrez votre email"
+                  value={email}
+                  onChange={(e) => setEmail(e.target.value)}
+                />
+              </div>
+
+              <div className="mb-3">
+                <label className="form-label">Mot de passe</label>
+                <input
+                  type="password"
+                  className="form-control"
+                  placeholder="Entrez votre mot de passe"
+                  value={password}
+                  onChange={(e) => setPassword(e.target.value)}
+                />
+              </div>
+
+              <div className="form-check mb-3">
+                <input type="checkbox" className="form-check-input" />
+                <label className="form-check-label">Se souvenir de moi</label>
+              </div>
+
+              <button type="submit" className="btn btn-warning w-100 fw-bold">
+                Se connecter
+              </button>
+            </form>
+
+            <p className="mt-3 text-dark small">Mot de passe oublié ?</p>
+            <p className="mt-2 text-dark small">
+              En cliquant sur "Se connecter" vous acceptez nos Conditions d'utilisation | Politique de confidentialité
+            </p>
+          </div>
+
+        </div>
+      </div>
     </div>
   );
 }
 
-const styles = {
-  container: {
-    maxWidth: "400px",
-    margin: "40px auto",
-    padding: "20px",
-    border: "1px solid #ddd",
-    borderRadius: "10px",
-    textAlign: "center",
-  },
-  title: { marginBottom: "20px" },
-  form: { display: "flex", flexDirection: "column", gap: "15px" },
-  input: { padding: "10px", borderRadius: "5px", border: "1px solid #ccc" },
-  button: {
-    padding: "10px",
-    borderRadius: "5px",
-    background: "#4CAF50",
-    color: "white",
-    border: "none",
-  },
-  error: { color: "red", marginBottom: "10px" },
-};
