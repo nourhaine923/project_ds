@@ -1,7 +1,6 @@
 pipeline {
 agent any
 
-```
 environment {
     DOCKERHUB_USER = "nourhaine123"
     IMAGE_NAME     = "frontend_de_react"
@@ -104,6 +103,5 @@ post {
         echo "❌ Pipeline failed!"
     }
 }
-```
 
 }
