@@ -1,0 +1,16 @@
+html, body {
+  height: 100%;
+  margin: 0;
+  padding: 0;
+}
+
+.profile-bg {
+  min-height: 100vh !important;
+  width: 100% !important;
+
+  /* Juste pour tester : ajoute une couleur visible */
+  background: #1d1d1d !important;
+
+  /* (Optionnel) pour voir clairement le div */
+  border: 3px solid red;
+}
