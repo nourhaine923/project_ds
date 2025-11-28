@@ -1,0 +1,38 @@
+/* App-specific styles */
+.navbar-brand {
+  font-size: 1.5rem;
+}
+
+.nav-link.active {
+  font-weight: 600;
+  color: #fff !important;
+}
+
+/* Smooth page transitions */
+main {
+  animation: fadeIn 0.3s ease-in;
+}
+
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+/* Enhanced form controls */
+.form-control:focus,
+.form-select:focus {
+  border-color: #667eea;
+  box-shadow: 0 0 0 0.2rem rgba(102, 126, 234, 0.25);
+}
+
+/* Badge enhancements */
+.badge {
+  padding: 0.5em 0.75em;
+  font-weight: 500;
+}
