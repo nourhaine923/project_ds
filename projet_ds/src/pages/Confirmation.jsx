@@ -13,43 +13,72 @@ export default function Confirmation() {
   };
 
   return (
-    <div className="container mt-4">
+    <div className="container my-5">
       <div className="row justify-content-center">
         <div className="col-md-8">
-          <div className="card text-center">
-            <div className="card-body">
+          <div className="card border-0 shadow-lg text-center">
+            <div className="card-body p-5">
               <div className="mb-4">
-                <i className="bi bi-check-circle-fill text-success" style={{ fontSize: "4rem" }}>✓</i>
+                <div
+                  className="rounded-circle bg-success bg-opacity-10 d-inline-flex align-items-center justify-content-center"
+                  style={{ width: "100px", height: "100px" }}
+                >
+                  <span style={{ fontSize: "4rem" }}>✅</span>
+                </div>
               </div>
-              <h2 className="card-title text-success mb-4">
-                Votre commande a été enregistrée !
+              <h2 className="card-title text-success mb-3 fw-bold">
+                Commande confirmée !
               </h2>
+              <p className="text-muted mb-4">
+                Votre commande a été enregistrée avec succès. Vous recevrez un email de confirmation sous peu.
+              </p>
 
               {/* Détails de la commande */}
-              <div className="text-start mt-4">
-                <h4>Détails de la commande</h4>
-                <p><strong>Numéro de commande:</strong> {orderDetails.orderId}</p>
-                <p><strong>Date:</strong> {orderDetails.date}</p>
+              <div className="text-start mt-5">
+                <div className="card bg-light border-0 mb-4">
+                  <div className="card-body">
+                    <h5 className="fw-bold mb-4">📋 Détails de la commande</h5>
+                    <div className="row mb-3">
+                      <div className="col-6">
+                        <small className="text-muted">Numéro de commande</small>
+                        <p className="mb-0 fw-bold">{orderDetails.orderId}</p>
+                      </div>
+                      <div className="col-6">
+                        <small className="text-muted">Date</small>
+                        <p className="mb-0 fw-bold">{orderDetails.date}</p>
+                      </div>
+                    </div>
+                  </div>
+                </div>
                 
-                <h5 className="mt-4">Articles:</h5>
-                <ul className="list-unstyled">
+                <h6 className="fw-bold mb-3">Articles commandés:</h6>
+                <div className="list-group mb-4">
                   {orderDetails.items.map((item, index) => (
-                    <li key={index} className="mb-2">
-                      {item.name} x{item.quantity} - {(item.price * item.quantity).toFixed(2)}€
-                    </li>
+                    <div key={index} className="list-group-item d-flex justify-content-between align-items-center border-0 bg-light">
+                      <div>
+                        <span className="fw-semibold">{item.name}</span>
+                        <br />
+                        <small className="text-muted">Quantité: {item.quantity}</small>
+                      </div>
+                      <span className="fw-bold">{(item.price * item.quantity).toFixed(2)}€</span>
+                    </div>
                   ))}
-                </ul>
+                </div>
                 
-                <hr />
-                <div className="d-flex justify-content-between">
-                  <strong>Total:</strong>
-                  <strong>{orderDetails.total.toFixed(2)}€</strong>
+                <div className="d-flex justify-content-between align-items-center p-3 bg-primary bg-opacity-10 rounded">
+                  <strong className="fs-5">Total:</strong>
+                  <strong className="fs-4 text-primary">{orderDetails.total.toFixed(2)}€</strong>
                 </div>
               </div>
 
-              <Link to="/" className="btn btn-primary mt-4">
-                Retour à l'accueil
-              </Link>
+              <div className="mt-5">
+                <Link to="/" className="btn btn-primary btn-lg px-5 me-2">
+                  Retour à l'accueil
+                </Link>
+                <Link to="/shop" className="btn btn-outline-primary btn-lg px-5">
+                  Continuer les achats
+                </Link>
+              </div>
             </div>
           </div>
         </div>
