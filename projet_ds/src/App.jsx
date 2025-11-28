@@ -21,7 +21,7 @@ function App() {
       <div className="d-flex flex-column min-vh-100">
         <Navbar />
         <main className="flex-grow-1">
-          <Routes>
+      <Routes>
             {/* User Pages */}
             <Route path="/" element={<Home />} />
             <Route path="/shop" element={<Shop />} />
@@ -40,9 +40,9 @@ function App() {
             
             {/* Advanced User Pages */}
             <Route path="/login" element={<LoginPage />} />
-            <Route path="/profil" element={<Profile />} />
-            <Route path="/about" element={<AboutContact />} />
-          </Routes>
+        <Route path="/profil" element={<Profile />} />
+        <Route path="/about" element={<AboutContact />} />
+      </Routes>
         </main>
         <Footer />
       </div>
