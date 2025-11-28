@@ -45,42 +45,38 @@ pipeline {
             }
         }
 
-     /* 5. SMOKE TEST */
-stage('Smoke Test') {
-    steps {
-        script {
-            echo "🚦 Running smoke test..."
+        /* 5. SMOKE TEST */
+        stage('Smoke Test') {
+            steps {
+                script {
+                    echo "🚦 Running smoke test..."
 
-            def imageName = "${DOCKERHUB_USER}/${IMAGE_NAME}:${env.BUILD_NUMBER}"
+                    def imageName = "${DOCKERHUB_USER}/${IMAGE_NAME}:${env.BUILD_NUMBER}"
 
-            // Remove old container if exists
-            bat 'docker rm -f react_test >nul 2>&1 || echo "No old container"'
+                    // Remove old container only before test
+                    bat 'docker rm -f react_test >nul 2>&1 || echo "No old container"'
 
-            // Run new container
-            bat "docker run -d -p 3000:3000 --name react_test ${imageName}"
+                    // Run new container
+                    bat "docker run -d -p 3000:3000 --name react_test ${imageName}"
 
-            echo "⏳ Waiting for application to start..."
-            sleep 5
+                    echo "⏳ Waiting for application to start..."
+                    sleep 5
 
-            echo "🌐 Checking HTTP status on http://localhost:3000"
-            bat 'curl -I http://localhost:3000 > http_response.txt 2>&1'
+                    echo "🌐 Checking HTTP status on http://localhost:3000"
+                    bat 'curl -I http://localhost:3000 > http_response.txt 2>&1'
 
-            // Check for HTTP 200
-            def passed = bat(returnStatus: true, script: 'findstr /C:"HTTP/1.1 200" http_response.txt') == 0
+                    // Check for HTTP 200
+                    def passed = bat(returnStatus: true, script: 'findstr /C:"HTTP/1.1 200" http_response.txt') == 0
 
-            if (passed) {
-                echo "✅ SMOKE TEST PASSED"
-                writeFile file: 'smoke_test_result.log', text: 'PASSED'
-            } else {
-                echo "❌ SMOKE TEST FAILED"
-                writeFile file: 'smoke_test_result.log', text: 'FAILED'
-                currentBuild.result = 'UNSTABLE'
+                    if (passed) {
+                        echo "✅ SMOKE TEST PASSED"
+                    } else {
+                        echo "❌ SMOKE TEST FAILED"
+                        currentBuild.result = 'UNSTABLE'
+                    }
+                }
             }
-
         }
-    }
-}
-
 
         /* 6. PUSH DOCKER IMAGE ON MAIN */
         stage('Push to Docker Hub') {
@@ -96,14 +92,13 @@ stage('Smoke Test') {
     }
 
     post {
-        always {
-            bat 'docker rm -f react_test || echo "Container cleaned"'
-        }
         success {
-            echo "✅ Pipeline completed successfully!"
+            echo "✨ SUCCESS — The container is kept running (react_test)!"
+            echo "👉 Access it here: http://localhost:3000"
         }
         failure {
-            echo "❌ Pipeline failed!"
+            echo "❌ Pipeline failed — container is kept for debugging"
         }
     }
 }
+
