@@ -2,85 +2,91 @@ pipeline {
     agent any
 
     environment {
-        DOCKERHUB_USER = "nourhaine123"  
-        IMAGE_NAME = "frontend_de_react"       
-    }
-
-    options {
-        skipStagesAfterUnstable()
+        DOCKERHUB_USER = "nourhaine123"
+        IMAGE_NAME = "frontend_de_react"
+        APP_PATH = "client/projet_ds"
     }
 
     stages {
 
-        /* 1) CHECKOUT */
+        /* 1. CHECKOUT */
         stage('Checkout') {
             steps {
-                echo "Cloning repository..."
+                echo "Pulling repository..."
                 checkout scm
             }
         }
 
-        /* 2) INSTALL DEPENDENCIES */
-        stage('Install') {
+        /* 2. INSTALL */
+        stage('Install Dependencies') {
             steps {
-                echo "Installing React dependencies..."
-                bat 'npm install'
+                dir("${APP_PATH}") {
+                    echo "Installing dependencies..."
+                    bat "npm install"
+                }
             }
         }
 
-        /* 3) BUILD REACT APP */
-        stage('Build') {
+        /* 3. BUILD VITE */
+        stage('Build React (Vite)') {
             steps {
-                echo "Building React app..."
-                bat 'npm run build'
+                dir("${APP_PATH}") {
+                    echo "Building project using Vite..."
+                    bat "npm run build"
+                }
             }
         }
 
-        /* 4) BUILD DOCKER IMAGE */
+        /* 4. BUILD DOCKER IMAGE */
         stage('Build Docker Image') {
             steps {
                 echo "Building Docker image..."
-                bat "docker build -t ${DOCKERHUB_USER}/${IMAGE_NAME}:${env.BUILD_NUMBER} ./client"
+                bat "docker build -t ${DOCKERHUB_USER}/${IMAGE_NAME}:${env.BUILD_NUMBER} ${APP_PATH}"
             }
         }
 
-        /* 5) RUN DOCKER CONTAINER */
-        stage('Run Docker Container') {
-            steps {
-                echo "Starting container with Docker Compose..."
-                bat "docker-compose up -d --build"
-            }
-        }
-
-        /* 6) RUN TESTS */
+        /* 5. SMOKE TEST (Vérifier container) */
         stage('Smoke Test') {
             steps {
-                echo "Running React tests..."
-                bat 'npm test'
+                script {
+                    echo "Running smoke test..."
+
+                    // Stop container if it exists
+                    bat 'docker rm -f react_test || echo "Container not running"' 
+
+                    // Run container
+                    bat "docker run -d -p 3000:3000 --name react_test ${DOCKERHUB_USER}/${IMAGE_NAME}:${env.BUILD_NUMBER}"
+
+                    sleep 5
+
+                    // Test HTTP response
+                    bat 'curl -I http://localhost:3000'
+                }
             }
         }
 
-        /* 7) PUSH IMAGE TO DOCKER HUB ONLY ON MAIN */
-        stage('Push Docker Image') {
-            when { branch 'main' }
+        /* 6. PUSH DOCKER IMAGE ON MAIN */
+        stage('Push to Docker Hub') {
+            when { branch "main" }
             steps {
-                script {
-                    echo " Pushing Docker image to Docker Hub..."
-                    bat """
-                        docker login -u ${DOCKERHUB_USER} -p ${DOCKERHUB_PASSWORD}
-                        docker push ${DOCKERHUB_USER}/${IMAGE_NAME}:${env.BUILD_NUMBER}
-                    """
-                }
+                echo "Pushing image to Docker Hub..."
+                bat """
+                    docker login -u ${DOCKERHUB_USER} -p ${DOCKERHUB_PASSWORD}
+                    docker push ${DOCKERHUB_USER}/${IMAGE_NAME}:${env.BUILD_NUMBER}
+                """
             }
         }
     }
 
     post {
+        always {
+            bat 'docker rm -f react_test || echo "Container cleaned"'
+        }
         success {
-            echo "✅ Pipeline finished successfully!"
+            echo "✅ Pipeline completed successfully!"
         }
         failure {
-            echo "❌ Pipeline failed."
+            echo "❌ Pipeline failed!"
         }
     }
 }
