@@ -24,7 +24,7 @@ pipeline {
         stage('Install') {
             steps {
                 echo "Installing React dependencies..."
-                sh 'npm install'
+                bat 'npm install'
             }
         }
 
@@ -32,7 +32,7 @@ pipeline {
         stage('Build') {
             steps {
                 echo "Building React app..."
-                sh 'npm run build'
+                bat 'npm run build'
             }
         }
 
@@ -40,7 +40,7 @@ pipeline {
         stage('Build Docker Image') {
             steps {
                 echo "Building Docker image..."
-                sh "docker build -t ${DOCKERHUB_USER}/${IMAGE_NAME}:${env.BUILD_NUMBER} .client"
+                bat "docker build -t ${DOCKERHUB_USER}/${IMAGE_NAME}:${env.BUILD_NUMBER} ./client"
             }
         }
 
@@ -48,7 +48,7 @@ pipeline {
         stage('Run Docker Container') {
             steps {
                 echo "Starting container with Docker Compose..."
-                sh "docker-compose up -d --build"
+                bat "docker-compose up -d --build"
             }
         }
 
@@ -56,7 +56,7 @@ pipeline {
         stage('Smoke Test') {
             steps {
                 echo "Running React tests..."
-                sh 'npm test'
+                bat 'npm test'
             }
         }
 
@@ -66,7 +66,7 @@ pipeline {
             steps {
                 script {
                     echo " Pushing Docker image to Docker Hub..."
-                    sh """
+                    bat """
                         docker login -u ${DOCKERHUB_USER} -p ${DOCKERHUB_PASSWORD}
                         docker push ${DOCKERHUB_USER}/${IMAGE_NAME}:${env.BUILD_NUMBER}
                     """
