@@ -95,13 +95,18 @@ post {
     always {
         echo "Cleaning up container..."
         bat 'docker rm -f react_test >nul 2>&1 || echo "Container already removed"'
+
+        echo "📦 Archiving artifacts..."
+        archiveArtifacts artifacts: "${APP_PATH}/dist/**", fingerprint: true
+        archiveArtifacts artifacts: "smoke_test_result.log", fingerprint: true
+        archiveArtifacts artifacts: "http_response.txt", fingerprint: true
     }
+
     success {
         echo "✅ Pipeline completed successfully!"
     }
+
     failure {
         echo "❌ Pipeline failed!"
     }
-}
-
 }
