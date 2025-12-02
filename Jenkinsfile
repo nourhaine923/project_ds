@@ -97,7 +97,7 @@ pipeline {
 
         /* 5. PUSH DOCKER IMAGE ON MAIN */
         stage('Push to Docker Hub') {
-            when { branch "main" }
+            when { branch "master" }
             steps {
                 echo "Pushing image to Docker Hub..."
                 bat """
