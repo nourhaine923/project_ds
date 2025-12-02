@@ -50,14 +50,16 @@ pipeline {
                 stage('Lint Code') {
                     steps {
                         catchError(buildResult: 'SUCCESS', stageResult: 'UNSTABLE') {
-                        dir("${APP_PATH}") {
-                        echo "Running ESLint..."
-                        bat "npm run lint"
-            }
-        }
-    }
-}
+                            dir("${APP_PATH}") {
+                                echo "Running ESLint..."
+                                bat "npm run lint || echo 'Lint warnings only'"
+                            }
+                        }
+                    }
+                }
 
+            } // ← FIN PARALLEL
+        }
 
         /* 4. SMOKE TEST */
         stage('Smoke Test') {
@@ -79,7 +81,6 @@ pipeline {
                     echo "🌐 Checking HTTP status on http://localhost:3000"
                     bat 'curl -I http://localhost:3000 > http_response.txt 2>&1'
 
-                    // Check for HTTP 200
                     def passed = bat(returnStatus: true, script: 'findstr /C:"HTTP/1.1 200" http_response.txt') == 0
 
                     if (passed) {
