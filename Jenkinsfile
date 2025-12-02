@@ -49,14 +49,15 @@ pipeline {
 
                 stage('Lint Code') {
                     steps {
+                        catchError(buildResult: 'SUCCESS', stageResult: 'UNSTABLE') {
                         dir("${APP_PATH}") {
-                            echo "Running ESLint..."
-                            bat "npm run lint || echo 'Lint warnings only'"
-                        }
-                    }
-                }
+                        echo "Running ESLint..."
+                        bat "npm run lint"
             }
         }
+    }
+}
+
 
         /* 4. SMOKE TEST */
         stage('Smoke Test') {
