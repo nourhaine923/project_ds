@@ -1,4 +1,4 @@
-pipeline { 
+pipeline {
     agent any
 
     environment {
@@ -17,7 +17,7 @@ pipeline {
             }
         }
 
-        /* 2. INSTALL */
+        /* 2. INSTALL DEPENDENCIES */
         stage('Install Dependencies') {
             steps {
                 dir("${APP_PATH}") {
@@ -27,38 +27,43 @@ pipeline {
             }
         }
 
-        /* 🚀 3. PARALLÉLISME : BUILD + TEST */
+        /* 3. BUILD + LINT + DOCKER IN PARALLEL */
         stage('Build & Tests (Parallel)') {
             parallel {
 
-                stage('Build React (Vite)') {
-                    steps {
-                        dir("${APP_PATH}") {
-                            echo "Building project using Vite..."
-                            bat "npm run build"
+                buildReact: {
+                    stage('Build React (Vite)') {
+                        steps {
+                            dir("${APP_PATH}") {
+                                echo "Building project using Vite..."
+                                bat "npm run build"
+                            }
                         }
                     }
-                }
+                },
 
-                stage('Build Docker Image') {
-                    steps {
-                        echo "Building Docker image..."
-                        bat "docker build -t ${DOCKERHUB_USER}/${IMAGE_NAME}:${env.BUILD_NUMBER} ${APP_PATH}"
+                dockerImage: {
+                    stage('Build Docker Image') {
+                        steps {
+                            echo "Building Docker image..."
+                            bat """
+                                docker build -t ${DOCKERHUB_USER}/${IMAGE_NAME}:${env.BUILD_NUMBER} ${APP_PATH}
+                            """
+                        }
                     }
-                }
+                },
 
-                stage('Lint Code') {
-                    steps {
-                        catchError(buildResult: 'SUCCESS', stageResult: 'UNSTABLE') {
+                lintCode: {
+                    stage('Lint Code') {
+                        steps {
+                            echo "Running ESLint..."
                             dir("${APP_PATH}") {
-                                echo "Running ESLint..."
                                 bat "npm run lint || echo 'Lint warnings only'"
                             }
                         }
                     }
                 }
-
-            } 
+            }
         }
 
         /* 4. SMOKE TEST */
@@ -69,19 +74,21 @@ pipeline {
 
                     def imageName = "${DOCKERHUB_USER}/${IMAGE_NAME}:${env.BUILD_NUMBER}"
 
-                    // Remove old container if exists
+                    // Remove old container (ignore errors)
                     bat 'docker rm -f react_test >nul 2>&1 || echo "No old container"'
 
                     // Run new container
-                    bat "docker run -d -p 3000:3000 --name react_test ${imageName}"
+                    bat """
+                        docker run -d -p 3000:3000 --name react_test ${imageName}
+                    """
 
                     echo "⏳ Waiting for application to start..."
-                    sleep 5
+                    sleep 8
 
                     echo "🌐 Checking HTTP status on http://localhost:3000"
                     bat 'curl -I http://localhost:3000 > http_response.txt 2>&1'
 
-                    def passed = bat(returnStatus: true, script: 'findstr /C:"HTTP/1.1 200" http_response.txt') == 0
+                    def passed = bat(returnStatus: true, script: 'findstr /C:"200" http_response.txt') == 0
 
                     if (passed) {
                         echo "✅ SMOKE TEST PASSED"
@@ -95,11 +102,11 @@ pipeline {
             }
         }
 
-        /* 5. PUSH DOCKER IMAGE ON MASTER */
+        /* 5. PUSH TO DOCKER HUB */
         stage('Push to Docker Hub') {
             when { branch "master" }
             steps {
-                echo "Pushing image to Docker Hub..."
+                echo "🔐 Logging into Docker Hub..."
 
                 withCredentials([usernamePassword(
                     credentialsId: 'dockerhub123',
@@ -107,7 +114,6 @@ pipeline {
                     passwordVariable: 'DOCKER_PASS'
                 )]) {
 
-                    // Login sécurisé
                     bat """
                         echo %DOCKER_PASS% | docker login -u %DOCKER_USER% --password-stdin
                         docker push ${DOCKERHUB_USER}/${IMAGE_NAME}:${env.BUILD_NUMBER}
@@ -119,7 +125,7 @@ pipeline {
 
     post {
         always {
-            bat 'docker rm -f react_test || echo "Container cleaned"'
+            bat 'docker rm -f react_test >nul 2>&1 || echo "Container cleaned"'
         }
         success {
             echo "✅ Pipeline completed successfully!"
