@@ -69,14 +69,17 @@ pipeline {
 
                     def imageName = "${DOCKERHUB_USER}/${IMAGE_NAME}:${env.BUILD_NUMBER}"
 
-                    // Remove old container if exists
+                    // Supprimer l'ancien conteneur s'il existe
                     bat 'docker rm -f react_test >nul 2>&1 || echo "No old container"'
 
-                    // Run new container
+                    // Vérifier si un processus utilise déjà le port 3000 et le tuer
+                    bat 'for /f "tokens=5" %i in (\'netstat -ano ^| findstr ":3000"\') do (taskkill /PID %i /F) || echo "Port 3000 libre"'
+
+                    // Lancer le nouveau conteneur
                     bat "docker run -d -p 3000:3000 --name react_test ${imageName}"
 
                     echo "⏳ Waiting for application to start..."
-                    sleep 15
+                    sleep 15 // laisser le temps à serve de démarrer
 
                     echo "🌐 Checking HTTP status on http://localhost:3000"
                     bat 'curl -I http://localhost:3000 > http_response.txt 2>&1'
