@@ -1,4 +1,4 @@
-pipeline {
+pipeline { 
     agent any
 
     environment {
@@ -95,15 +95,22 @@ pipeline {
             }
         }
 
-        /* 5. PUSH DOCKER IMAGE ON MAIN */
+        /* 5. PUSH DOCKER IMAGE ON MASTER */
         stage('Push to Docker Hub') {
             when { branch "master" }
             steps {
                 echo "Pushing image to Docker Hub..."
-                bat """
-                    docker login -u ${DOCKERHUB_USER} -p ${DOCKERHUB_PASSWORD}
-                    docker push ${DOCKERHUB_USER}/${IMAGE_NAME}:${env.BUILD_NUMBER}
-                """
+
+                withCredentials([usernamePassword(
+                    credentialsId: '178ee507-e30c-4e10-8f1b-aff4213f4f79',
+                    usernameVariable: 'DOCKER_USER',
+                    passwordVariable: 'DOCKER_PASS'
+                )]) {
+                    bat """
+                        docker login -u %DOCKER_USER% -p %DOCKER_PASS%
+                        docker push ${DOCKERHUB_USER}/${IMAGE_NAME}:${env.BUILD_NUMBER}
+                    """
+                }
             }
         }
     }
