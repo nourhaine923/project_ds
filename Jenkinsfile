@@ -51,7 +51,7 @@ pipeline {
                             """
                         }
                     }
-                },
+                }
 
                 lintCode: {
                     stage('Lint Code') {
