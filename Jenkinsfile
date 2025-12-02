@@ -1,4 +1,4 @@
-pipeline {
+pipeline { 
     agent any
 
     environment {
@@ -17,7 +17,7 @@ pipeline {
             }
         }
 
-        /* 2. INSTALL DEPENDENCIES */
+        /* 2. INSTALL */
         stage('Install Dependencies') {
             steps {
                 dir("${APP_PATH}") {
@@ -27,43 +27,38 @@ pipeline {
             }
         }
 
-        /* 3. BUILD + LINT + DOCKER IN PARALLEL */
+        /* 🚀 3. PARALLÉLISME : BUILD + TEST */
         stage('Build & Tests (Parallel)') {
             parallel {
 
-                buildReact: {
-                    stage('Build React (Vite)') {
-                        steps {
-                            dir("${APP_PATH}") {
-                                echo "Building project using Vite..."
-                                bat "npm run build"
-                            }
+                stage('Build React (Vite)') {
+                    steps {
+                        dir("${APP_PATH}") {
+                            echo "Building project using Vite..."
+                            bat "npm run build"
                         }
                     }
                 }
 
-                dockerImage: {
-                    stage('Build Docker Image') {
-                        steps {
-                            echo "Building Docker image..."
-                            bat """
-                                docker build -t ${DOCKERHUB_USER}/${IMAGE_NAME}:${env.BUILD_NUMBER} ${APP_PATH}
-                            """
-                        }
+                stage('Build Docker Image') {
+                    steps {
+                        echo "Building Docker image..."
+                        bat "docker build -t ${DOCKERHUB_USER}/${IMAGE_NAME}:${env.BUILD_NUMBER} ${APP_PATH}"
                     }
-                },
+                }
 
-                lintCode: {
-                    stage('Lint Code') {
-                        steps {
-                            echo "Running ESLint..."
+                stage('Lint Code') {
+                    steps {
+                        catchError(buildResult: 'SUCCESS', stageResult: 'UNSTABLE') {
                             dir("${APP_PATH}") {
+                                echo "Running ESLint..."
                                 bat "npm run lint || echo 'Lint warnings only'"
                             }
                         }
                     }
                 }
-            }
+
+            } 
         }
 
         /* 4. SMOKE TEST */
@@ -74,21 +69,19 @@ pipeline {
 
                     def imageName = "${DOCKERHUB_USER}/${IMAGE_NAME}:${env.BUILD_NUMBER}"
 
-                    // Remove old container (ignore errors)
+                    // Remove old container
                     bat 'docker rm -f react_test >nul 2>&1 || echo "No old container"'
 
                     // Run new container
-                    bat """
-                        docker run -d -p 3000:3000 --name react_test ${imageName}
-                    """
+                    bat "docker run -d -p 3000:3000 --name react_test ${imageName}"
 
                     echo "⏳ Waiting for application to start..."
-                    sleep 8
+                    sleep 5
 
                     echo "🌐 Checking HTTP status on http://localhost:3000"
                     bat 'curl -I http://localhost:3000 > http_response.txt 2>&1'
 
-                    def passed = bat(returnStatus: true, script: 'findstr /C:"200" http_response.txt') == 0
+                    def passed = bat(returnStatus: true, script: 'findstr /C:"HTTP/1.1 200" http_response.txt') == 0
 
                     if (passed) {
                         echo "✅ SMOKE TEST PASSED"
@@ -102,11 +95,11 @@ pipeline {
             }
         }
 
-        /* 5. PUSH TO DOCKER HUB */
+        /* 🚀 5. PUSH DOCKER IMAGE ON MASTER */
         stage('Push to Docker Hub') {
             when { branch "master" }
             steps {
-                echo "🔐 Logging into Docker Hub..."
+                echo "Pushing image to Docker Hub..."
 
                 withCredentials([usernamePassword(
                     credentialsId: 'dockerhub123',
