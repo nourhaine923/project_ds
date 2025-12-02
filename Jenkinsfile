@@ -58,7 +58,7 @@ pipeline {
                     }
                 }
 
-            } 
+            } // ← FIN PARALLEL
         }
 
         /* 4. SMOKE TEST */
@@ -69,7 +69,7 @@ pipeline {
 
                     def imageName = "${DOCKERHUB_USER}/${IMAGE_NAME}:${env.BUILD_NUMBER}"
 
-                    // Remove old container
+                    // Remove old container if exists
                     bat 'docker rm -f react_test >nul 2>&1 || echo "No old container"'
 
                     // Run new container
@@ -95,18 +95,19 @@ pipeline {
             }
         }
 
-        /* 🚀 5. PUSH DOCKER IMAGE ON MASTER */
+        /* 5. PUSH DOCKER IMAGE ON MASTER */
         stage('Push to Docker Hub') {
             when { branch "master" }
             steps {
                 echo "Pushing image to Docker Hub..."
 
                 withCredentials([usernamePassword(
-                    credentialsId: 'dockerhub123',
+                    credentialsId: '178ee507-e30c-4e10-8f1b-aff4213f4f79',
                     usernameVariable: 'DOCKER_USER',
                     passwordVariable: 'DOCKER_PASS'
                 )]) {
 
+                    // Login sécurisé (recommended by Docker)
                     bat """
                         echo %DOCKER_PASS% | docker login -u %DOCKER_USER% --password-stdin
                         docker push ${DOCKERHUB_USER}/${IMAGE_NAME}:${env.BUILD_NUMBER}
@@ -118,7 +119,7 @@ pipeline {
 
     post {
         always {
-            bat 'docker rm -f react_test >nul 2>&1 || echo "Container cleaned"'
+            bat 'docker rm -f react_test || echo "Container cleaned"'
         }
         success {
             echo "✅ Pipeline completed successfully!"
