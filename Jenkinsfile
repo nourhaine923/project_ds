@@ -1,4 +1,4 @@
-pipeline { 
+pipeline {
     agent any
 
     environment {
@@ -30,7 +30,6 @@ pipeline {
         /* 🚀 3. PARALLÉLISME : BUILD + TEST */
         stage('Build & Tests (Parallel)') {
             parallel {
-
                 stage('Build React (Vite)') {
                     steps {
                         dir("${APP_PATH}") {
@@ -39,25 +38,22 @@ pipeline {
                         }
                     }
                 }
-
                 stage('Build Docker Image') {
                     steps {
                         echo "Building Docker image..."
                         bat "docker build -t ${DOCKERHUB_USER}/${IMAGE_NAME}:${env.BUILD_NUMBER} ${APP_PATH}"
                     }
                 }
-
                 stage('Lint Code') {
                     steps {
                         catchError(buildResult: 'SUCCESS', stageResult: 'UNSTABLE') {
                             dir("${APP_PATH}") {
                                 echo "Running ESLint..."
-                                bat "npm run lint || echo 'Lint warnings only' || exit 0"
+                                bat "npm run lint || echo 'Lint warnings only'"
                             }
                         }
                     }
                 }
-
             } // ← FIN PARALLEL
         }
 
@@ -66,16 +62,12 @@ pipeline {
             steps {
                 script {
                     echo "🚦 Running smoke test..."
-
                     def imageName = "${DOCKERHUB_USER}/${IMAGE_NAME}:${env.BUILD_NUMBER}"
 
-                    // Supprimer l'ancien conteneur s'il existe
+                    // Remove old container if exists
                     bat 'docker rm -f react_test >nul 2>&1 || echo "No old container"'
 
-                    // Libérer le port 3000 si utilisé (Windows)
-                    bat 'powershell -Command "Get-Process -Id (Get-NetTCPConnection -LocalPort 3000).OwningProcess | Stop-Process -Force -ErrorAction SilentlyContinue"'
-
-                    // Lancer le nouveau conteneur
+                    // Run new container
                     bat "docker run -d -p 3000:3000 --name react_test ${imageName}"
 
                     echo "⏳ Waiting for application to start..."
@@ -103,14 +95,12 @@ pipeline {
             when { branch "master" }
             steps {
                 echo "Pushing image to Docker Hub..."
-
                 withCredentials([usernamePassword(
-                    credentialsId: 'dockerhub123',
-                    usernameVariable: 'DOCKER_USER',
+                    credentialsId: 'dockerhub123', 
+                    usernameVariable: 'DOCKER_USER', 
                     passwordVariable: 'DOCKER_PASS'
                 )]) {
-
-                    // Login sécurisé (recommended by Docker)
+                    // Login sécurisé
                     bat """
                         echo %DOCKER_PASS% | docker login -u %DOCKER_USER% --password-stdin
                         docker push ${DOCKERHUB_USER}/${IMAGE_NAME}:${env.BUILD_NUMBER}
@@ -118,7 +108,8 @@ pipeline {
                 }
             }
         }
-    }
+
+    } // FIN STAGES
 
     post {
         always {
