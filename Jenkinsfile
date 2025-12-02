@@ -76,7 +76,7 @@ pipeline {
                     bat "docker run -d -p 3000:3000 --name react_test ${imageName}"
 
                     echo "⏳ Waiting for application to start..."
-                    sleep 5
+                    sleep 15
 
                     echo "🌐 Checking HTTP status on http://localhost:3000"
                     bat 'curl -I http://localhost:3000 > http_response.txt 2>&1'
