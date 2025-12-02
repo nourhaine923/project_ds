@@ -58,7 +58,7 @@ pipeline {
                     }
                 }
 
-            } // ← FIN PARALLEL
+            } 
         }
 
         /* 4. SMOKE TEST */
@@ -106,8 +106,10 @@ pipeline {
                     usernameVariable: 'DOCKER_USER',
                     passwordVariable: 'DOCKER_PASS'
                 )]) {
+
+                    // Login sécurisé
                     bat """
-                        docker login -u %DOCKER_USER% -p %DOCKER_PASS%
+                        echo %DOCKER_PASS% | docker login -u %DOCKER_USER% --password-stdin
                         docker push ${DOCKERHUB_USER}/${IMAGE_NAME}:${env.BUILD_NUMBER}
                     """
                 }
