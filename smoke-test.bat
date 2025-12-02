@@ -26,5 +26,12 @@ if %errorlevel%==0 (
 )
 
 echo 🧹 Cleaning up...
+REM ❗ Commenting out container removal for debugging purposes
+REM docker rm -f %CONTAINER_NAME% >nul 2>&1
+
+exit /b 0
+
+
+echo 🧹 Cleaning up...
 docker rm -f %CONTAINER_NAME% >nul 2>&1
 exit /b 0
