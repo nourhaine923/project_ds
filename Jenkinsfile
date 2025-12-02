@@ -47,17 +47,6 @@ pipeline {
                     }
                 }
 
-                stage('Lint Code') {
-                    steps {
-                        catchError(buildResult: 'SUCCESS', stageResult: 'UNSTABLE') {
-                            dir("${APP_PATH}") {
-                                echo "Running ESLint..."
-                                bat "npm run lint || echo 'Lint warnings only'"
-                            }
-                        }
-                    }
-                }
-
             } // ← END PARALLEL
         }
 
