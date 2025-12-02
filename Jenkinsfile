@@ -40,7 +40,7 @@ pipeline {
                             }
                         }
                     }
-                },
+                }
 
                 dockerImage: {
                     stage('Build Docker Image') {
