@@ -52,7 +52,7 @@ pipeline {
                         catchError(buildResult: 'SUCCESS', stageResult: 'UNSTABLE') {
                             dir("${APP_PATH}") {
                                 echo "Running ESLint..."
-                                bat "npm run lint || echo 'Lint warnings only'"
+                                bat "npm run lint || echo 'Lint warnings only' || exit 0"
                             }
                         }
                     }
@@ -72,14 +72,14 @@ pipeline {
                     // Supprimer l'ancien conteneur s'il existe
                     bat 'docker rm -f react_test >nul 2>&1 || echo "No old container"'
 
-                    // Vérifier si un processus utilise déjà le port 3000 et le tuer
-                    bat 'for /f "tokens=5" %i in (\'netstat -ano ^| findstr ":3000"\') do (taskkill /PID %i /F) || echo "Port 3000 libre"'
+                    // Libérer le port 3000 si utilisé (Windows)
+                    bat 'powershell -Command "Get-Process -Id (Get-NetTCPConnection -LocalPort 3000).OwningProcess | Stop-Process -Force -ErrorAction SilentlyContinue"'
 
                     // Lancer le nouveau conteneur
                     bat "docker run -d -p 3000:3000 --name react_test ${imageName}"
 
                     echo "⏳ Waiting for application to start..."
-                    sleep 15 // laisser le temps à serve de démarrer
+                    sleep 15
 
                     echo "🌐 Checking HTTP status on http://localhost:3000"
                     bat 'curl -I http://localhost:3000 > http_response.txt 2>&1'
