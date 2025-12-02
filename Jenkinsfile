@@ -1,4 +1,4 @@
-pipeline {
+pipeline { 
     agent any
 
     environment {
@@ -27,9 +27,10 @@ pipeline {
             }
         }
 
-        /* 🚀 3. PARALLÉLISME : BUILD + TEST */
+        /* 🚀 3. PARALLEL: BUILD + TEST */
         stage('Build & Tests (Parallel)') {
             parallel {
+
                 stage('Build React (Vite)') {
                     steps {
                         dir("${APP_PATH}") {
@@ -38,12 +39,14 @@ pipeline {
                         }
                     }
                 }
+
                 stage('Build Docker Image') {
                     steps {
                         echo "Building Docker image..."
                         bat "docker build -t ${DOCKERHUB_USER}/${IMAGE_NAME}:${env.BUILD_NUMBER} ${APP_PATH}"
                     }
                 }
+
                 stage('Lint Code') {
                     steps {
                         catchError(buildResult: 'SUCCESS', stageResult: 'UNSTABLE') {
@@ -54,7 +57,8 @@ pipeline {
                         }
                     }
                 }
-            } // ← FIN PARALLEL
+
+            } // ← END PARALLEL
         }
 
         /* 4. SMOKE TEST */
@@ -63,21 +67,12 @@ pipeline {
                 script {
                     echo "🚦 Running smoke test..."
                     def imageName = "${DOCKERHUB_USER}/${IMAGE_NAME}:${env.BUILD_NUMBER}"
-
-                    // Remove old container if exists
-                    bat 'docker rm -f react_test >nul 2>&1 || echo "No old container"'
-
-                    // Run new container
                     bat "docker run -d -p 3000:3000 --name react_test ${imageName}"
-
                     echo "⏳ Waiting for application to start..."
                     sleep 15
-
                     echo "🌐 Checking HTTP status on http://localhost:3000"
                     bat 'curl -I http://localhost:3000 > http_response.txt 2>&1'
-
                     def passed = bat(returnStatus: true, script: 'findstr /C:"HTTP/1.1 200" http_response.txt') == 0
-
                     if (passed) {
                         echo "✅ SMOKE TEST PASSED"
                         writeFile file: 'smoke_test_result.log', text: 'PASSED'
@@ -96,11 +91,10 @@ pipeline {
             steps {
                 echo "Pushing image to Docker Hub..."
                 withCredentials([usernamePassword(
-                    credentialsId: 'dockerhub123', 
-                    usernameVariable: 'DOCKER_USER', 
+                    credentialsId: 'dockerhub123',
+                    usernameVariable: 'DOCKER_USER',
                     passwordVariable: 'DOCKER_PASS'
                 )]) {
-                    // Login sécurisé
                     bat """
                         echo %DOCKER_PASS% | docker login -u %DOCKER_USER% --password-stdin
                         docker push ${DOCKERHUB_USER}/${IMAGE_NAME}:${env.BUILD_NUMBER}
@@ -108,8 +102,7 @@ pipeline {
                 }
             }
         }
-
-    } // FIN STAGES
+    }
 
     post {
         always {
